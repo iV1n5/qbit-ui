@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>qbit-ui</title>
+    <script>
+      // Follow the system light/dark setting: shadcn's dark theme applies
+      // under the "dark" class. Inline in <head> so the page never flashes.
+      {
+        const dark = matchMedia("(prefers-color-scheme: dark)")
+        const apply = () =>
+          document.documentElement.classList.toggle("dark", dark.matches)
+        apply()
+        dark.addEventListener("change", apply)
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

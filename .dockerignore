@@ -1,0 +1,9 @@
+# Keep the build context to what the image build needs.
+.git
+.env
+node_modules
+dist
+docs
+*.md
+.DS_Store
+.vscode

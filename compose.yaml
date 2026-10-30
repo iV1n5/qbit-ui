@@ -1,0 +1,23 @@
+# qbit-ui on the NUC: `docker compose up -d --build`.
+# Optional settings go in a .env file next to this one (see README).
+services:
+  qbit-ui:
+    build: .
+    container_name: qbit-ui
+    restart: unless-stopped
+    ports:
+      - "${QBIT_UI_PORT:-8457}:80"
+    environment:
+      # qBittorrent as seen from this container. It runs in gluetun's network
+      # namespace, so it is reached through gluetun's name on the network.
+      QBT_URL: ${QBT_URL:-http://gluetun:8456}
+    networks:
+      - qbittorrent
+
+networks:
+  # The network of the compose project that runs qBittorrent. Joining it,
+  # rather than gluetun's network namespace, means our requests never come
+  # from 127.0.0.1, which qBittorrent may let in without a login.
+  qbittorrent:
+    external: true
+    name: ${QBT_NETWORK:-qbittorrent-vpn_default}
