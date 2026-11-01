@@ -50,6 +50,11 @@ Full functional spec: `docs/SPEC.md` (read it before implementing a feature).
 - Installable on iPhone home screen (web app manifest + apple-touch-icon +
   `apple-mobile-web-app-capable`). No service worker: the UI is served over
   plain http on the LAN, where service workers do not run.
+- Icon: a magnet (magnet links) with tips in the state colors. In `public/`:
+  `favicon.svg` is the rounded tile for tabs; `icon.svg` is the full-bleed
+  square (smaller glyph, for iOS and maskable cropping) the PNGs come from:
+  `qlmanage -t -s 512 icon.svg`, then `sips -z <size> <size>` for 512, 192,
+  180 (`apple-touch-icon.png`) and 32 (`favicon-32.png`).
 - Node: current LTS.
 
 ## Layout (target)

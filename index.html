@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
     <title>qbit-ui</title>
+    <!-- The PNG for browsers without SVG favicons; its sizes keeps Chrome on the SVG. -->
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- iPhone home screen: square, iOS rounds the corners. -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="qbit-ui" />
+    <!-- Browser bars in the page's background color (shadcn's light and dark). -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
     <script>
       // Follow the system light/dark setting: shadcn's dark theme applies
       // under the "dark" class. Inline in <head> so the page never flashes.
