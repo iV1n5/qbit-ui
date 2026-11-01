@@ -65,6 +65,7 @@ src/
   lib/              formatting helpers (sizes, speeds, ETA)
 public/             manifest, icons
 docs/SPEC.md        functional spec
+docs/screenshots/   README images (blur torrent names and paths)
 vite.config.ts      includes the dev proxy for /api
 Dockerfile          production image: Node build stage, then Caddy
 Caddyfile           production server: dist/ + the /api proxy

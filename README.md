@@ -2,13 +2,36 @@
 
 A small, mobile-first web UI for [qBittorrent](https://www.qbittorrent.org/)
 5.x, made for everyday use from a phone: see how downloads are going, start,
-stop or delete them, and search with qBittorrent's plugins to add new ones to
-a category. Settings and everything else stay in the official WebUI.
+pause or delete them, choose which of their files to download, and search
+with qBittorrent's plugins to add new ones to a category. Settings and
+everything else stay in the official WebUI.
 
 It is a personal project, built with React, TypeScript, Vite, Tailwind CSS and
 shadcn/ui. The UI talks to the qBittorrent WebAPI through a same-origin proxy:
 Vite's in development, Caddy in the Docker image. Light and dark themes follow
 the system.
+
+## Screenshots
+
+Torrent names and paths are blurred.
+
+On a phone: the list, colored by state (swipe a row left to delete it), and a
+torrent's details in a bottom sheet.
+
+<p>
+  <img src="docs/screenshots/mobile-list.png" alt="Downloads list on a phone" width="380">
+  <img src="docs/screenshots/mobile-detail.png" alt="A torrent's details on a phone" width="380">
+</p>
+
+On a desktop: the sortable table, a torrent's details with its files, and
+adding a search result with a category.
+
+![Downloads table on a desktop](docs/screenshots/desktop-list.png)
+
+<p>
+  <img src="docs/screenshots/desktop-details.png" alt="A torrent's details and files on a desktop" width="380">
+  <img src="docs/screenshots/add-torrent.png" alt="Adding a search result" width="440">
+</p>
 
 ## Development
 
