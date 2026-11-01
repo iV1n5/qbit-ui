@@ -1,16 +1,21 @@
-import { Fragment } from "react"
+import { Fragment, type CSSProperties } from "react"
+import { X } from "lucide-react"
 
 import type { Torrent } from "@/api/types"
 import { StateLabel } from "@/components/state-label"
 import { TorrentActions } from "@/components/torrent-actions"
+import { TorrentFiles } from "@/components/torrent-files"
+import { Button } from "@/components/ui/button"
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
+import { useMediaQuery } from "@/hooks/use-media-query"
 import {
   formatBytes,
   formatDate,
@@ -21,7 +26,15 @@ import {
 } from "@/lib/format"
 import { etaLabel } from "@/lib/torrents"
 
-/** Phone layout: the tapped torrent's details and actions, in a bottom sheet. */
+// Wider than the default side panel (24rem): file names are long.
+const SIDE_PANEL: CSSProperties = {
+  ["--drawer-content-width" as string]: "min(40rem, 90vw)",
+}
+
+/**
+ * The selected torrent's details, files and actions: a bottom sheet on
+ * phones, a panel from the right from `md` up.
+ */
 export function TorrentDrawer({
   torrent,
   open,
@@ -34,30 +47,43 @@ export function TorrentDrawer({
   onOpenChange: (open: boolean) => void
   onChanged: () => void
 }) {
+  const desktop = useMediaQuery("(min-width: 48rem)")
   return (
     <Drawer
       open={open && torrent !== undefined}
       onOpenChange={onOpenChange}
-      showSwipeHandle
+      swipeDirection={desktop ? "right" : "down"}
+      showSwipeHandle={!desktop}
     >
-      <DrawerContent>
+      <DrawerContent style={desktop ? SIDE_PANEL : undefined}>
         {torrent && (
           <>
-            <DrawerHeader>
+            <DrawerHeader className="md:pr-12">
               <DrawerTitle className="wrap-anywhere">{torrent.name}</DrawerTitle>
               <DrawerDescription>
                 <StateLabel state={torrent.state} />
               </DrawerDescription>
             </DrawerHeader>
-            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 overflow-y-auto p-4">
-              {details(torrent).map(([term, value]) => (
-                <Fragment key={term}>
-                  <dt className="text-muted-foreground">{term}</dt>
-                  <dd className="wrap-anywhere tabular-nums">{value}</dd>
-                </Fragment>
-              ))}
-            </dl>
-            <DrawerFooter className="flex-row *:flex-1">
+            {desktop && (
+              <DrawerClose
+                className="absolute top-3 right-3"
+                render={<Button variant="ghost" size="icon-sm" aria-label="Close" />}
+              >
+                <X />
+              </DrawerClose>
+            )}
+            <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-4">
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+                {details(torrent).map(([term, value]) => (
+                  <Fragment key={term}>
+                    <dt className="text-muted-foreground">{term}</dt>
+                    <dd className="wrap-anywhere tabular-nums">{value}</dd>
+                  </Fragment>
+                ))}
+              </dl>
+              <TorrentFiles hash={torrent.hash} onChanged={onChanged} />
+            </div>
+            <DrawerFooter className="flex-row border-t pt-4 *:flex-1">
               <TorrentActions torrent={torrent} onChanged={onChanged} />
             </DrawerFooter>
           </>

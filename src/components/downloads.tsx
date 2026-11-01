@@ -7,7 +7,10 @@ import { TorrentList } from "@/components/torrent-list"
 import { TorrentTable } from "@/components/torrent-table"
 import { compareDefault } from "@/lib/torrents"
 
-/** The home view: a list on phones, a sortable table from `md` up. */
+/**
+ * The home view: a list on phones, a sortable table from `md` up. Picking a
+ * torrent opens its details.
+ */
 export function Downloads({
   torrents,
   loading,
@@ -23,6 +26,11 @@ export function Downloads({
   const [selectedHash, setSelectedHash] = useState<string>()
   const [sheetOpen, setSheetOpen] = useState(false)
   const selected = torrents.find((t) => t.hash === selectedHash)
+
+  function select(hash: string) {
+    setSelectedHash(hash)
+    setSheetOpen(true)
+  }
 
   if (loading) {
     return (
@@ -42,23 +50,17 @@ export function Downloads({
   return (
     <>
       <div className="md:hidden">
-        <TorrentList
-          torrents={sorted}
-          onSelect={(hash) => {
-            setSelectedHash(hash)
-            setSheetOpen(true)
-          }}
-        />
-        <TorrentDrawer
-          torrent={selected}
-          open={sheetOpen}
-          onOpenChange={setSheetOpen}
-          onChanged={onChanged}
-        />
+        <TorrentList torrents={sorted} onSelect={select} onChanged={onChanged} />
       </div>
       <div className="hidden md:block">
-        <TorrentTable torrents={sorted} onChanged={onChanged} />
+        <TorrentTable torrents={sorted} onSelect={select} onChanged={onChanged} />
       </div>
+      <TorrentDrawer
+        torrent={selected}
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        onChanged={onChanged}
+      />
     </>
   )
 }

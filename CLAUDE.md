@@ -96,7 +96,10 @@ compose.yaml        runs the image on the NUC
 - Search results are added like the 5.3 WebUI does: `torrents/add` with
   `urls=<fileUrl>` and `downloader=<engineName>` (the plugin fetches .torrent
   URLs that need it). Search jobs stay in qBittorrent, even across restarts,
-  until `search/delete`.
+  until `search/delete`. To choose files before adding, `torrents/fetchMetadata`
+  (same `downloader`; 202 = ask again) and then `filePriorities` in
+  `torrents/add`, which qBittorrent refuses (400) unless the metadata was
+  fetched first.
 - Type the API responses in `src/api/types.ts`.
 - When an endpoint's behaviour is unclear, check how the official WebUI of 5.3
   does it (qBittorrent repo, `src/webui/www/private/scripts/`), and the WebAPI

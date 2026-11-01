@@ -18,6 +18,15 @@ function App() {
   const { status, torrents, serverState, error, pollNow, restart } =
     useMainData()
   const [view, setView] = useState<View>("downloads")
+  // Mounted at the first visit, then only hidden: the last search survives a
+  // look at the downloads. qBittorrent deletes it on a new search or when
+  // the page goes away.
+  const [searchOpened, setSearchOpened] = useState(false)
+
+  function changeView(next: View) {
+    setView(next)
+    if (next === "search") setSearchOpened(true)
+  }
 
   if (status === "loggedOut") {
     return (
@@ -46,7 +55,7 @@ function App() {
     <>
       <AppHeader
         view={view}
-        onViewChange={setView}
+        onViewChange={changeView}
         serverState={serverState}
         onLogout={handleLogout}
       />
@@ -59,20 +68,22 @@ function App() {
         </p>
       )}
       <main>
-        {view === "downloads" ? (
+        {view === "downloads" && (
           <Downloads
             torrents={torrents}
             loading={status === "loading"}
             onChanged={pollNow}
           />
-        ) : (
-          // Leaving this view deletes the search from qBittorrent.
-          <SearchView
-            onAdded={() => {
-              setView("downloads")
-              pollNow()
-            }}
-          />
+        )}
+        {searchOpened && (
+          <div hidden={view !== "search"}>
+            <SearchView
+              onAdded={() => {
+                setView("downloads")
+                pollNow()
+              }}
+            />
+          </div>
         )}
       </main>
     </>

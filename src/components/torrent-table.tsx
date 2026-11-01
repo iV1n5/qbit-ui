@@ -58,10 +58,11 @@ const COLUMNS = {
     // Takes the free width, and truncates instead of widening the table.
     className: "w-full max-w-0",
     compare: byText((t) => t.name),
+    // A button for the keyboard; its click bubbles to the row.
     cell: (t) => (
-      <span className="block truncate" title={t.name}>
+      <button type="button" className="block w-full truncate text-left" title={t.name}>
         {t.name}
-      </span>
+      </button>
     ),
   },
   size: {
@@ -151,12 +152,17 @@ const COLUMNS = {
 type ColumnKey = keyof typeof COLUMNS
 const COLUMN_KEYS = Object.keys(COLUMNS) as ColumnKey[]
 
-/** Desktop layout. `torrents` come in the default order. */
+/**
+ * Desktop layout. `torrents` come in the default order; clicking a row
+ * selects it.
+ */
 export function TorrentTable({
   torrents,
+  onSelect,
   onChanged,
 }: {
   torrents: Torrent[]
+  onSelect: (hash: string) => void
   onChanged: () => void
 }) {
   const [sort, setSort] = useState<{ key: ColumnKey; desc: boolean }>()
@@ -220,7 +226,11 @@ export function TorrentTable({
       </TableHeader>
       <TableBody>
         {rows.map((t) => (
-          <TableRow key={t.hash}>
+          <TableRow
+            key={t.hash}
+            onClick={() => onSelect(t.hash)}
+            className="cursor-pointer"
+          >
             {COLUMN_KEYS.map((key) => {
               const column: Column = COLUMNS[key]
               return (
@@ -229,7 +239,9 @@ export function TorrentTable({
                 </TableCell>
               )
             })}
-            <TableCell className="py-0">
+            {/* React events bubble out of portals too: without this, the
+                Delete dialog's clicks would also open the details. */}
+            <TableCell className="py-0" onClick={(e) => e.stopPropagation()}>
               <div className="flex">
                 <TorrentActions torrent={t} compact onChanged={onChanged} />
               </div>

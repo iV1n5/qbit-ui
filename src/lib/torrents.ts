@@ -18,13 +18,16 @@ export function isErrored(state: TorrentState) {
   return state === "error" || state === "missingFiles"
 }
 
-/** Stopped by the user: the one case where "Start" applies. */
+/**
+ * Paused by the user (qBittorrent 5 calls it stopped; the UI says paused,
+ * like its Pause button): the one case where "Start" applies.
+ */
 export function isStopped(state: TorrentState) {
   return state === "stoppedDL" || state === "stoppedUP"
 }
 
 // Colors at a glance: green downloading, orange waiting (stalled, queued,
-// metadata, checking, moving), blue finished, gray stopped, red error.
+// metadata, checking, moving), blue finished, gray paused, red error.
 const COLORS = {
   downloading: {
     text: "text-green-600 dark:text-green-500",
@@ -49,7 +52,7 @@ export function stateColors(state: TorrentState) {
 export function etaLabel({ state, eta }: Torrent) {
   if (isErrored(state)) return "Error"
   if (isCompleted(state)) return "Done"
-  if (state === "stoppedDL") return "Stopped"
+  if (state === "stoppedDL") return "Paused"
   if (state === "queuedDL") return "Queued"
   if (eta >= MAX_ETA) return "∞"
   return formatDuration(eta)
@@ -82,7 +85,7 @@ const STATES: Record<TorrentState, { label: string; order: number }> = {
   queuedUP: { label: "Queued", order: 10 },
   checkingUP: { label: "Checking", order: 11 },
   checkingDL: { label: "Checking", order: 12 },
-  stoppedDL: { label: "Stopped", order: 13 },
+  stoppedDL: { label: "Paused", order: 13 },
   stoppedUP: { label: "Completed", order: 14 },
   moving: { label: "Moving", order: 15 },
   missingFiles: { label: "Missing files", order: 16 },

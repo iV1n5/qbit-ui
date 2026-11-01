@@ -1,16 +1,9 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react"
 import { LoaderCircle } from "lucide-react"
 
-import {
-  getCategories,
-  getDefaultSavePath,
-  getSearchPlugins,
-} from "@/api/client"
+import { getSearchPlugins } from "@/api/client"
 import type { SearchResult } from "@/api/types"
-import {
-  AddTorrentDialog,
-  type SaveTargets,
-} from "@/components/add-torrent-dialog"
+import { AddTorrentDialog } from "@/components/add-torrent-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -30,11 +23,13 @@ import {
   resultSummary,
 } from "@/lib/search"
 
-/** Searches with qBittorrent's plugins; picking a result offers to add it. */
+/**
+ * Searches with qBittorrent's plugins; picking a result offers to add it.
+ * Keep it mounted (hidden) to keep the last search between visits.
+ */
 export function SearchView({ onAdded }: { onAdded: () => void }) {
   const search = useSearch()
   const [pluginsEnabled, setPluginsEnabled] = useState<boolean>()
-  const [targets, setTargets] = useState<SaveTargets>()
   // The selection outlives the dialog, so that it closes with its content.
   const [selected, setSelected] = useState<SearchResult>()
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -49,14 +44,9 @@ export function SearchView({ onAdded }: { onAdded: () => void }) {
   )
 
   useEffect(() => {
-    // On failure these stay unknown: searching still works, or says why.
+    // On failure this stays unknown: searching still works, or says why.
     getSearchPlugins().then(
       (plugins) => setPluginsEnabled(plugins.some((p) => p.enabled)),
-      () => {}
-    )
-    Promise.all([getCategories(), getDefaultSavePath()]).then(
-      ([categories, defaultSavePath]) =>
-        setTargets({ categories, defaultSavePath }),
       () => {}
     )
   }, [])
@@ -188,12 +178,13 @@ export function SearchView({ onAdded }: { onAdded: () => void }) {
       )}
 
       <AddTorrentDialog
-        key={selected?.fileUrl}
         result={selected}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        targets={targets}
-        onAdded={onAdded}
+        onAdded={() => {
+          setDialogOpen(false)
+          onAdded()
+        }}
       />
     </>
   )

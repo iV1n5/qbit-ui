@@ -7,6 +7,8 @@ import type {
   MainData,
   SearchPlugin,
   SearchResults,
+  TorrentFile,
+  TorrentMetadata,
 } from "@/api/types"
 
 const BASE = "/api/v2"
@@ -77,6 +79,24 @@ export async function stopTorrent(hash: string) {
   await post("torrents/stop", { hashes: hash })
 }
 
+/** Empty until the torrent's metadata has been downloaded. */
+export function getTorrentFiles(hash: string) {
+  return getJson<TorrentFile[]>(`torrents/files?hash=${hash}`)
+}
+
+/** Priority 0 means "do not download". 409: no metadata yet. */
+export async function setFilePriority(
+  hash: string,
+  indexes: number[],
+  priority: number
+) {
+  await post("torrents/filePrio", {
+    hash,
+    id: indexes.join("|"),
+    priority: String(priority),
+  })
+}
+
 /** `deleteFiles`: also delete the downloaded data. */
 export async function deleteTorrent(hash: string, deleteFiles: boolean) {
   await post("torrents/delete", { hashes: hash, deleteFiles: String(deleteFiles) })
@@ -85,16 +105,36 @@ export async function deleteTorrent(hash: string, deleteFiles: boolean) {
 /**
  * Adds a search result, as the official WebUI does: `engine` lets
  * qBittorrent download a .torrent URL through the plugin that found it, and
- * autoTMM makes the category's folder apply. 409: nothing was added (e.g.
- * the torrent is already there).
+ * autoTMM makes the category's folder apply. `filePriorities`, one per file
+ * in index order, only once fetchMetadata has the files (else 400).
+ * 409: nothing was added (e.g. the torrent is already there).
  */
-export async function addTorrent(url: string, engine: string, category: string) {
+export async function addTorrent(
+  url: string,
+  engine: string,
+  category: string,
+  filePriorities?: number[]
+) {
   await post("torrents/add", {
     urls: url,
     downloader: engine,
     category,
     autoTMM: "true",
+    ...(filePriorities && { filePriorities: filePriorities.join(",") }),
   })
+}
+
+/**
+ * Gets a torrent's file list before adding it. For a magnet the files come
+ * from peers, so it may take a while, or never come: `pending` (HTTP 202)
+ * means ask again.
+ */
+export async function fetchMetadata(source: string, engine: string) {
+  const res = await post("torrents/fetchMetadata", { source, downloader: engine })
+  return {
+    pending: res.status === 202,
+    metadata: (await res.json()) as TorrentMetadata,
+  }
 }
 
 export function getCategories() {

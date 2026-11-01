@@ -52,6 +52,32 @@ export interface Torrent {
   num_incomplete: number
 }
 
+/** A file of a torrent, from `torrents/files`. */
+export interface TorrentFile {
+  /** What `torrents/filePrio` takes as `id`. */
+  index: number
+  /** Path inside the torrent, "/"-separated. */
+  name: string
+  /** Bytes. */
+  size: number
+  /** From 0 to 1. */
+  progress: number
+  /** 0 = do not download, 1 = normal, 6 = high, 7 = maximum. */
+  priority: number
+}
+
+/**
+ * `torrents/fetchMetadata` for a torrent not added yet: `info` is missing
+ * while qBittorrent is still getting it (HTTP 202).
+ */
+export interface TorrentMetadata {
+  info?: {
+    name: string
+    /** In file index order: what `filePriorities` follows. */
+    files?: { path: string; length: number; priority?: number }[]
+  }
+}
+
 export interface ServerState {
   /** Global speeds, bytes per second. */
   dl_info_speed: number
