@@ -45,6 +45,8 @@ export interface Torrent {
   ratio: number
   /** Ratio per month of activity; -1 when infinite. */
   popularity: number
+  /** Full copies the connected peers hold together; -1 when unknown. */
+  availability: number
   /** Seeds and leechers we are connected to, and in the whole swarm. */
   num_seeds: number
   num_complete: number

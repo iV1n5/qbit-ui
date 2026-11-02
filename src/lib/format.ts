@@ -41,6 +41,11 @@ export function formatRatio(ratio: number) {
   return ratio < 0 ? "∞" : truncate(ratio, 2)
 }
 
+/** "28.535" full copies among peers, as the official WebUI; "" when unknown (-1). */
+export function formatAvailability(copies: number) {
+  return copies < 0 ? "" : truncate(copies, 3)
+}
+
 /** "3 (120)": peers we are connected to, and in the swarm when known. */
 export function formatPeers(connected: number, swarm: number) {
   return swarm >= 0 ? `${connected} (${swarm})` : String(connected)

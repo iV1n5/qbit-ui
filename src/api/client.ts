@@ -84,6 +84,16 @@ export function getTorrentFiles(hash: string) {
   return getJson<TorrentFile[]>(`torrents/files?hash=${hash}`)
 }
 
+/** Per piece: 0 missing, 1 downloading, 2 downloaded. Empty without metadata. */
+export function getPieceStates(hash: string) {
+  return getJson<number[]>(`torrents/pieceStates?hash=${hash}`)
+}
+
+/** Per piece: how many connected peers have it. */
+export function getPieceAvailability(hash: string) {
+  return getJson<number[]>(`torrents/pieceAvailability?hash=${hash}`)
+}
+
 /** Priority 0 means "do not download". 409: no metadata yet. */
 export async function setFilePriority(
   hash: string,

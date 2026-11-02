@@ -55,9 +55,21 @@ with "Also delete the downloaded files" (off by default).
 
 ### Mobile detail (bottom sheet)
 
-Name (full), size, progress %, download speed, upload speed, ETA, state,
-category, destination folder, seeds/peers, ratio, added on; the files; the
-actions.
+Name (full), size, progress %, availability, download speed, upload speed,
+ETA, state, category, destination folder, seeds/peers, ratio, added on; the
+files; the actions.
+
+**Pieces bars**, beside progress and availability, as in the official
+WebUI's General tab: `GET torrents/pieceStates` (per piece: 0 missing,
+1 downloading, 2 downloaded) and `GET torrents/pieceAvailability` (per piece:
+how many peers have it), refreshed every 5 s while open. Each pixel shows the
+pieces falling in it: downloaded in blue, downloading in green. Availability
+in blue, from faint (the least shared piece) to full (the most shared), empty
+where no peer has the pieces. The scale is relative to the torrent's own range
+because peers usually hold most pieces, and against zero the differences
+don't show (the official WebUI's bar looks uniform for that reason). Under it,
+the real range: "23–31 peers per piece". The number after availability is the
+torrent's `availability` (full copies among peers, 3 decimals).
 
 **Files** (`GET torrents/files?hash=`, refreshed every 5 s while open, as the
 official WebUI): one row per file, sorted by path, without the folder they all
