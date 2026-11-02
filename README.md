@@ -13,7 +13,8 @@ the system.
 
 ## Screenshots
 
-Torrent names and paths are blurred.
+The torrents shown are example data: open movies, Linux images and public
+domain films.
 
 On a phone: the list, colored by state (swipe a row left to delete it), and a
 torrent's details in a bottom sheet.
